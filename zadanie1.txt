@@ -1,0 +1,63 @@
+1.1
+A) rodzeństwo
+B) kuzyni
+C) wspoltesciowie
+D) macocha/pasierb
+E) bracia przyrodni
+F) szwagrowie
+G) dziwneRodzeństwo
+
+1.2
+rodzenstwo(X, Y) :-
+    rodzic(Z, X),
+    rodzic(Z, Y),
+    X \= Y.
+
+kuzyn(X, Y) :-
+    rodzic(Z, X),
+    rodzic(W, Y),
+    rodzic(V, Z),
+    rodzic(V, W),
+    X \= Y,
+    X @< Y.
+
+wspoltesciowie(X, Y) :-
+    rodzic(X, B),
+	rodzic(B, C),
+	rodzic(A, C),
+	rodzic(Y, A).
+
+macocha(X, Y) :-
+    kobieta(Y), 
+    rodzic(Y, Syn), 
+    rodzic(Ojciec, Syn),
+    rodzic(Ojciec, X),
+    X \= Y, 
+    \+rodzic(Y, X).
+
+brat_przyrodni(X, Y) :-
+    mezczyzna(X),
+    mezczyzna(Y),
+    X \= Y,
+    rodzic(Matka, X),
+    rodzic(Ojciec, X),
+	rodzic(Ojciec, Y),
+    rodzic(InnaMatka, Y),
+    InnaMatka \= Matka.
+
+szwagier(X, Y) :-
+    rodzic(Ojciec, Y),
+    rodzic(Ojciec, Siostra),
+    \+ rodzic(Siostra, Y),
+    mezczyzna(X),
+    rodzic(X, ktokolwiek),
+    \+ rodzic(Y, ktokolwiek),
+    Siostra \= Y,
+    Siostra \= X.
+
+dziwneRodzenstwo(X, Y) :-
+    rodzic(B, X),
+	rodzic(B, A),
+	rodzic(C, X),
+	rodzic(C, Y),
+	rodzic(A, Y).

@@ -1,0 +1,78 @@
+2.
+
+kobieta(X) :-
+    osoba(X),
+    \+ mezczyzna(X).
+
+ojciec(X,Y) :-
+    mezczyzna(X),
+    rodzic(X,Y).
+
+matka(X,Y) :-
+    kobieta(X),
+    rodzic(X,Y).
+
+corka(X,Y) :-
+    kobieta(X),
+    rodzic(Y,X).
+
+brat_rodzony(X,Y) :-
+    mezczyzna(X),
+    mezczyzna(Y),
+    rodzic(Z,X),
+    rodzic(Z,Y),
+    X \= Y,
+    X @< Y.
+
+brat_przyrodni(X,Y) :-
+    mezczyzna(X),
+    mezczyzna(Y),
+    X \= Y,
+    rodzic(Matka, X),
+    rodzic(Ojciec, X),
+	rodzic(Ojciec, Y),
+    rodzic(InnaMatka, Y),
+    InnaMatka \= Matka.
+
+kuzyn(X, Y) :-
+    rodzic(Z, X),
+    rodzic(W, Y),
+    rodzic(V, Z),
+    rodzic(V, W),
+    X \= Y,
+    mezczyzna(X),
+    X @< Y.
+
+dziadek_od_strony_ojca(X, Y) :-
+    mezczyzna(X),
+    rodzic(X, Z),
+    rodzic(Z, Y).
+
+dziadek_od_strony_matki(X, Y) :-
+    mezczyzna(X),
+    rodzic(X, Z),
+    matka(Z, Y).
+
+dziadek(X, Y) :-
+    mezczyzna(X),
+    rodzic(X, Z),
+    rodzic(Z, Y).
+
+babcia(X, Y) :-
+    kobieta(X),
+    rodzic(X, Z),
+    rodzic(Z, Y).
+
+wnuczka(X, Y) :-
+    kobieta(Y),
+    rodzic(X, Z),
+    rodzic(Z, Y).
+
+przodek_do2pokolenia_wstecz(X,Y) :-
+    rodzic(X,Z),
+    rodzic(Z,Y),
+    osoba(X).
+
+przodek_do3pokolenia_wstecz(X,Y) :-
+    przodek_do2pokolenia_wstecz(Z,Y),
+    rodzic(X,Z).
