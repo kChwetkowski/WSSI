@@ -28,7 +28,6 @@ class DecisionTree:
     def _grow_tree(self, X, y, depth=0):
         num_samples_per_class = [np.sum(y == i) for i in range(len(set(y)))]
         if not num_samples_per_class:
-            # Return default value if list is empty
             return Node(value=0)
 
         predicted_class = np.argmax(num_samples_per_class)
