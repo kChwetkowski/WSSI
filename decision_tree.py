@@ -26,19 +26,20 @@ class DecisionTree:
         self.root = self._grow_tree(X, y)
 
     def _grow_tree(self, X, y, depth=0):
-        n_samples = X.shape[0]
-        n_features = X.shape[1]
+        n_samples, n_features = X.shape[0], X.shape[1]
 
         if n_samples < self.min_samples_split or len(np.unique(y)) == 1 or depth >= self.max_depth:
             return Node(value=Counter(y).most_common(1)[0][0])
 
-        feat_idxs = np.random.choice(n_features, self.n_features, replace=False)
-        best_feat, best_thresh = self._best_split(X, y, feat_idxs)
-        if best_feat is None:
-            return Node(value=Counter(y).most_common(1)[0][0])
+        if self.n_features:
+            feat_idxs = np.random.choice(n_features, self.n_features, replace=False)
+        else:
+            feat_idxs = range(n_features)
 
+        best_feat, best_thresh = self._best_split(X, y, feat_idxs)
         left_idxs, right_idxs = self._split(X[:, best_feat], best_thresh)
-        if len(left_idxs) < self.min_samples_split or len(right_idxs) < self.min_samples_split:
+
+        if len(left_idxs) == 0 or len(right_idxs) == 0:
             return Node(value=Counter(y).most_common(1)[0][0])
 
         left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
@@ -73,8 +74,8 @@ class DecisionTree:
         return ig
 
     def _split(self, X_column, split_thresh):
-        left_idxs = np.argwhere(X_column <= split_thresh).flatten()
-        right_idxs = np.argwhere(X_column > split_thresh).flatten()
+        left_idxs = np.where(X_column <= split_thresh)[0]
+        right_idxs = np.where(X_column > split_thresh)[0]
         return left_idxs, right_idxs
 
     def _entropy(self, y):
