@@ -86,7 +86,7 @@ class DecisionTree:
     def _entropy(self, y):
         hist = np.bincount(y)
         ps = hist / len(y)
-        return -np.sum([p * np.log2(p) for p in ps if p > 0])
+        return -np.sum([p * np.log(p) for p in ps if p > 0])
 
     def _traverse_tree(self, x, node):
         if node.is_leaf_node():
