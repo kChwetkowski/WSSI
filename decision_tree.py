@@ -26,22 +26,25 @@ class DecisionTree:
         self.root = self._grow_tree(X, y)
 
     def _grow_tree(self, X, y, depth=0):
-        num_samples_per_class = [np.sum(y == i) for i in range(len(set(y)))]
-        if not num_samples_per_class:
-            return Node(value=0)
-        predicted_class = np.argmax(num_samples_per_class)
-        node = Node(value=predicted_class)
-        if depth < self.max_depth:
-            if len(X) >= self.min_samples_split:
-                feat_idxs = np.random.choice(X.shape[1], self.n_features, replace=False)
-                best_feat, best_thresh = self._best_split(X, y, feat_idxs)
-                if best_feat is not None:
-                    left_idxs, right_idxs = self._split(X[:, best_feat], best_thresh)
-                    if len(left_idxs) > self.min_samples_split and len(right_idxs) > self.min_samples_split:
-                        left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
-                        right = self._grow_tree(X[right_idxs, :], y[right_idxs], depth + 1)
-                        node = Node(feature=best_feat, threshold=best_thresh, left=left, right=right)
-        return node
+        n_samples = X.shape[0]
+        n_features = X.shape[1]
+
+        if n_samples < self.min_samples_split or len(np.unique(y)) == 1 or depth >= self.max_depth:
+            return Node(value=Counter(y).most_common(1)[0][0])
+
+        feat_idxs = np.random.choice(n_features, self.n_features, replace=False)
+        best_feat, best_thresh = self._best_split(X, y, feat_idxs)
+        if best_feat is None:
+            return Node(value=Counter(y).most_common(1)[0][0])
+
+        left_idxs, right_idxs = self._split(X[:, best_feat], best_thresh)
+        if len(left_idxs) < self.min_samples_split or len(right_idxs) < self.min_samples_split:
+            return Node(value=Counter(y).most_common(1)[0][0])
+
+        left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
+        right = self._grow_tree(X[right_idxs, :], y[right_idxs], depth + 1)
+
+        return Node(feature=best_feat, threshold=best_thresh, left=left, right=right)
 
     def _best_split(self, X, y, feat_idxs):
         best_feat, best_thresh = None, None
